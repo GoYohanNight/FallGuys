@@ -20,7 +20,8 @@ public class HexTile : MonoBehaviour
         if (other.gameObject.tag.Equals("Player") && !isPushed)
         {
             isPushed = true;
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, -0.7f, 0), _pushVelocity);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, -1.7f, 0), _pushVelocity);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, 2f, 0), _pushVelocity);
             gameObject.GetComponent<MeshRenderer>().material = mat;
             Invoke("ResetDestroy", 1.5f);
         }
@@ -28,7 +29,7 @@ public class HexTile : MonoBehaviour
 
     private void ResetDestroy()
     {
-        transform.Translate(new Vector3(0, +0.1f, 0));
+        //transform.Translate(new Vector3(0, +0.1f, 0));
         Destroy(this.gameObject, _destroyDelay);
     }
 

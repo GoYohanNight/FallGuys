@@ -609,7 +609,7 @@ MonoBehaviour:
   - {fileID: 1175849487}
   - {fileID: 1008520863}
   - {fileID: 789490078}
-  NumForErase: 100
+  NumForErase: 5
   mat: {fileID: 2100000, guid: 40544ee9501b7ec428cd8a09f9f87f24, type: 2}
   createMapManager: {fileID: 0}
   max: 320
@@ -1000,6 +1000,7 @@ GameObject:
   - component: {fileID: 1012358205}
   - component: {fileID: 1012358204}
   - component: {fileID: 1012358208}
+  - component: {fileID: 1012358209}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1101,8 +1102,21 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 32
+  m_Constraints: 42
   m_CollisionDetection: 0
+--- !u!114 &1012358209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012358203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12436faade38dc34f88182b34b91e2d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
 --- !u!4 &1035196395 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4413223078045470, guid: 61a4f649633a1f94abeb21559df74bd4, type: 3}

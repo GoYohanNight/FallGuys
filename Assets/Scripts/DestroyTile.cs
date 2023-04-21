@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class DestroyTile : MonoBehaviour
 {
     public int PlayerFloor = 0;
+
     
     [SerializeField] private GameObject[] floorsSet;
     [SerializeField] private int NumForErase = 15;
@@ -36,14 +38,18 @@ public class DestroyTile : MonoBehaviour
          * max = 320 으로 초기화
          */
         GameObject tile;
-
+        int nowPlayerFloor = 0;
         while (true)
         {
             List<int> randomList = new List<int>();
             Debug.Log("Start of Coroutine");
-
             Debug.Log(max);
-            int nowPlayerFloor = PlayerFloor;
+
+            if (nowPlayerFloor != PlayerFloor)
+            {
+                max = 320;
+            }
+            nowPlayerFloor = PlayerFloor;
             // (남은 타일 개수 < 지워야 하는 타일 개수) 라면 전부 삭제 후 층 내려감
             if (max <= NumForErase)
             {
@@ -73,13 +79,13 @@ public class DestroyTile : MonoBehaviour
             }
             else
             {
-                //타일 랜덤 삭제
+                //삭제할 타일 번호 뽑기
                 for (int i = 0; i < NumForErase;)
                 {
-                    int currentNumber = Random.Range(0, max); //0~319
+                    int currentNumber = UnityEngine.Random.Range(0, max); //0~319
                     if (randomList.Contains(currentNumber)) //랜덤뽑은 숫자가 중복이면
                     {
-                        currentNumber = Random.Range(0, max); //다시 뽑기
+                        currentNumber = UnityEngine.Random.Range(0, max); //다시 뽑기
                     }
                     else
                     {
@@ -88,12 +94,20 @@ public class DestroyTile : MonoBehaviour
                     }
                 }
 
+                //타일 삭제
                 for (int i = 0; i < randomList.Count; i++)
                 {
-                    tile = floorsSet[nowPlayerFloor].transform.GetChild(randomList[i]).gameObject;
-                    tile.GetComponent<MeshRenderer>().material = mat;
+                    try
+                    {
+                        tile = floorsSet[nowPlayerFloor].transform.GetChild(randomList[i]).gameObject;
+                        tile.GetComponent<MeshRenderer>().material = mat;
+                        Destroy(tile, 1f);
+                    }
 
-                    Destroy(tile, 1f);
+                    catch (Exception ex)
+                    {
+                        Debug.Log("예외 : "+ex); 
+                    }
                 }
                 max -= NumForErase;
                 Debug.Log(max);
