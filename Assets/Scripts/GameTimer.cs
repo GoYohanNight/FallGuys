@@ -8,6 +8,10 @@ public class GameTimer : MonoBehaviour
     private float startTime;
     private float elapsedTime;
     public bool isStart;
+    public bool isGameOver = false;
+    public GameObject gameManager;
+    public GameManager gameManagerScript;
+    private int minutes, seconds;
     [SerializeField] private float StartTime = 5.5f;
 
     private void Start()
@@ -19,12 +23,20 @@ public class GameTimer : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isStart)
+        if (isStart && !isGameOver)
         {
             elapsedTime += Time.fixedDeltaTime;
-            int minutes = Mathf.FloorToInt(elapsedTime / 60f);
-            int seconds = Mathf.FloorToInt(elapsedTime - minutes * 60);
+            minutes = Mathf.FloorToInt(elapsedTime / 60f);
+            seconds = Mathf.FloorToInt(elapsedTime - minutes * 60);
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
+        else if (isGameOver)
+        {
+            isStart = false;
+            gameManagerScript = gameManager.GetComponent<GameManager>();
+            gameManagerScript.min = minutes;
+            gameManagerScript.sec = seconds;
+            gameManagerScript.isGameOver = true;
         }
 
     }
@@ -32,6 +44,7 @@ public class GameTimer : MonoBehaviour
     private void StartTimer()
     {
         isStart = true;
+
     }
 
 }

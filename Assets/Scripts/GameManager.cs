@@ -6,18 +6,27 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] countdownImg;
     public GameTimer gameTimer;
-    public GameObject startTile;
+    public GameObject startTile, DestroyTile;
+    public DestroyTile destroyTile;
+    public bool isGameOver=false;
+    public int min, sec;
 
     void Start()
     {
         //시작시 카운트 다운 초기화, 게임 시작 false 설정
         StartCoroutine(Countdown());
         gameTimer = this.GetComponent<GameTimer>();
+        destroyTile = DestroyTile.GetComponent<DestroyTile>();
     }
 
     void Update()
     {
-
+        if (isGameOver)
+        {
+            destroyTile.isGameOver = true;
+            Debug.Log(min);
+            Debug.Log(sec);
+        }
     }
 
     IEnumerator Countdown()

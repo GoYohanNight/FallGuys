@@ -7,6 +7,7 @@ public class DestroyTile : MonoBehaviour
 {
     public int PlayerFloor = 0;
     private bool isStart = false;
+    public bool isGameOver = false;
 
     
     [SerializeField] private GameObject[] floorsSet;
@@ -14,6 +15,8 @@ public class DestroyTile : MonoBehaviour
     [SerializeField] private float StartTime=5.5f;
     [SerializeField] private Material mat;
     [SerializeField] private CreateMapManager createMapManager;
+    GameObject gameManager;
+    GameManager gameManagerScript;
 
     public int max=320;
     //List<int> randomList = new List<int>();
@@ -48,6 +51,11 @@ public class DestroyTile : MonoBehaviour
         int nowPlayerFloor = 0;
         while (true)
         {
+            if (isGameOver)
+            {
+                StopCoroutine(SelectTile());
+            }
+
             List<int> randomList = new List<int>();
             Debug.Log("Start of Coroutine");
             Debug.Log(max);
@@ -75,7 +83,9 @@ public class DestroyTile : MonoBehaviour
                 if (nowPlayerFloor == 3)
                 {
                     //코루틴종료
+                    Debug.Log("코루틴종료1");
                     StopCoroutine(SelectTile());
+                    Debug.Log("코루틴종료2");
                 }
                 else
                 {
