@@ -6,10 +6,12 @@ using System;
 public class DestroyTile : MonoBehaviour
 {
     public int PlayerFloor = 0;
+    private bool isStart = false;
 
     
     [SerializeField] private GameObject[] floorsSet;
     [SerializeField] private int NumForErase = 15;
+    [SerializeField] private float StartTime=5.5f;
     [SerializeField] private Material mat;
     [SerializeField] private CreateMapManager createMapManager;
 
@@ -19,14 +21,19 @@ public class DestroyTile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(SelectTile());
-        //Debug.Log(SelectTile(maxTileNum)); //함수실행
+        Invoke("StartDestroy", StartTime);
+
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void StartDestroy()
+    {
+        StartCoroutine(SelectTile());
     }
 
     IEnumerator SelectTile()
@@ -89,7 +96,7 @@ public class DestroyTile : MonoBehaviour
                     }
                     else
                     {
-                        randomList.Add(currentNumber);
+                        randomList.Add(currentNumber); //랜덤 숫자 넣기
                         i++;
                     }
                 }
@@ -103,7 +110,6 @@ public class DestroyTile : MonoBehaviour
                         tile.GetComponent<MeshRenderer>().material = mat;
                         Destroy(tile, 1f);
                     }
-
                     catch (Exception ex)
                     {
                         Debug.Log("예외 : "+ex); 
@@ -116,7 +122,6 @@ public class DestroyTile : MonoBehaviour
             Debug.Log("End of Coroutine");
 
         }
-        
     }
  
 

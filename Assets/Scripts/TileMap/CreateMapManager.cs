@@ -29,7 +29,6 @@ public class CreateMapManager : MonoBehaviour
 
     private void Awake()
     {
-
         for(int i = 0; i <= 3; i++)
         {
             MakeTile(firstPos);
