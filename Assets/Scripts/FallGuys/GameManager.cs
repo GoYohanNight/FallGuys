@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -24,8 +23,8 @@ public class GameManager : MonoBehaviour
         if (isGameOver)
         {
             destroyTile.isGameOver = true;
-            Debug.Log(min);
-            Debug.Log(sec);
+            // Debug.Log(min);
+            // Debug.Log(sec);
         }
     }
 

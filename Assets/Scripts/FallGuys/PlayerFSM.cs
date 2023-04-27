@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerFSM : MonoBehaviour
@@ -10,10 +8,14 @@ public class PlayerFSM : MonoBehaviour
     private Transform cameraArm;        // 카메라 회전에 사용할 컴포넌트
     [SerializeField]
     private Rigidbody rigidbody;        // 점프, 다이빙에 사용할 컴포넌트
-    [SerializeField]
-    private GameTimer gameTimer;        // 게임 시작 체크에 사용할 스크립트
 
     private Animator animator;          // 애니메이션 상태 전환에 사용할 컴포넌트
+    private GameTimer gameTimer;        // 게임 시작 체크에 사용할 스크립트
+    private AudioSource soundEffect;    // 캐릭터 효과음 재생에 사용할 오디오 소스
+
+    public AudioClip WalkClip;
+    public AudioClip JumpClip;
+    public AudioClip DiveClip;
 
     public float moveSpeed = 0.0f;      // 캐릭터 이동 속도
     public float jumpPower = 0.0f;      // 캐릭터 점프 세기
@@ -23,15 +25,20 @@ public class PlayerFSM : MonoBehaviour
     private Vector3 lookForward;        // 캐릭터가 바라보는 방향을 저장할 변수 (캐릭터의 로컬 X축)
     private Vector3 lookSide;           // 캐릭터의 로컬 Z축
     private Vector3 moveInput;          // 캐릭터가 이동할 방향을 저장할 변수
+
     private bool isMove = false;        // 방향키 입력 상태를 체크하는 bool 변수
     private bool isGrounded = true;     // 캐릭터 지면 접촉 상태를 체크하는 bool 변수
-
     private bool firstStart = true;     // 게임 시작을 체크하는 bool 변수
+
+    public float delayTime = 0.0f;
+    private float timer = 0.0f;
 
     private void Start()
     {
         // rigidbody = rigidbody.GetComponent<Rigidbody>();
         animator = characterBody.GetComponentInChildren<Animator>();
+        gameTimer = GameObject.Find("GameManager").GetComponent<GameTimer>();
+        soundEffect = GameObject.Find("SoundEffects").GetComponent<AudioSource>();
         this.state = State.Load;
     }
 
@@ -80,7 +87,7 @@ public class PlayerFSM : MonoBehaviour
             this.state = State.Dead;
         }
 
-        Debug.Log(state);
+        // Debug.Log(state);
 
         // 마우스의 움직임에 따른 카메라 회전 함수 실행
         LookAround();
@@ -98,6 +105,19 @@ public class PlayerFSM : MonoBehaviour
         animator.SetBool("IsMove", isMove);
         // 캐릭터 지면 접촉 상태 체크
         animator.SetBool("IsGrounded", isGrounded);
+
+        if (state == State.Move)
+        {
+            timer += Time.deltaTime;
+
+            if (timer > delayTime)
+            {
+                soundEffect.clip = WalkClip;
+                soundEffect.Play();
+
+                timer = 0.0f;
+            }
+        }
 
         switch (state)
         {
@@ -128,28 +148,21 @@ public class PlayerFSM : MonoBehaviour
         if (isMove)
         {
             // Idle -> Move
-            this.state = State.Move;
+            GoMoveState();
         }
 
         // 스페이스바를 입력하면
         if (Input.GetKeyDown(KeyCode.Space))
         {
             // Idle -> Jump
-            isGrounded = false;
-            rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.VelocityChange);
-            animator.SetTrigger("IsJump");
-            this.state = State.Jump;
+            GoJumpState();
         }
 
         // 쉬프트키를 입력하거나 마우스를 우클릭하면
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
         {
             // Idle -> Dive
-            isGrounded = false;
-            rigidbody.AddForce(lookForward * divePower, ForceMode.VelocityChange);
-            rigidbody.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
-            animator.SetTrigger("IsDive");
-            this.state = State.Dive;
+            GoDiveState();
         }
     }
 
@@ -173,21 +186,14 @@ public class PlayerFSM : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             // Move -> Jump
-            isGrounded = false;
-            rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.VelocityChange);
-            animator.SetTrigger("IsJump");
-            this.state = State.Jump;
+            GoJumpState();
         }
 
         // 쉬프트키를 입력하거나 마우스를 우클릭하면
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
         {
             // Move -> Dive
-            isGrounded = false;
-            rigidbody.AddForce(lookForward * divePower, ForceMode.VelocityChange);
-            rigidbody.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
-            animator.SetTrigger("IsDive");
-            this.state = State.Dive;
+            GoDiveState();
         }
     }
 
@@ -203,11 +209,7 @@ public class PlayerFSM : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
         {
             // Jump -> Dive
-            isGrounded = false;
-            rigidbody.AddForce(lookForward * divePower, ForceMode.VelocityChange);
-            rigidbody.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
-            animator.SetTrigger("IsDive");
-            this.state = State.Dive;
+            GoDiveState();
         }
 
         // 지면에 닿을 때
@@ -221,7 +223,7 @@ public class PlayerFSM : MonoBehaviour
             else
             { // 방향키 입력값이 있으면
                 // Jump -> Move
-                this.state = State.Move;
+                GoMoveState();
             }
         }
     }
@@ -241,7 +243,7 @@ public class PlayerFSM : MonoBehaviour
             else
             { // 방향키 입력값이 있으면
                 // Jump -> Move
-                this.state = State.Move;
+                GoMoveState();
             }
         }
     }
@@ -261,5 +263,36 @@ public class PlayerFSM : MonoBehaviour
         {
             isGrounded = true;
         }
+    }
+
+
+    // Move State 변환 정의
+    private void GoMoveState()
+    {
+        soundEffect.clip = WalkClip;
+        this.state = State.Move;
+    }
+
+    // Jump State 변환 정의
+    private void GoJumpState()
+    {
+        rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.VelocityChange);
+        soundEffect.clip = JumpClip;
+        soundEffect.Play();
+        animator.SetTrigger("IsJump");
+        isGrounded = false;
+        this.state = State.Jump;
+    }
+
+    // Dive State 변환 정의
+    private void GoDiveState()
+    {
+        rigidbody.AddForce(lookForward * divePower, ForceMode.VelocityChange);
+        rigidbody.AddForce(Vector3.up * divePower, ForceMode.VelocityChange);
+        soundEffect.clip = DiveClip;
+        soundEffect.Play();
+        animator.SetTrigger("IsDive");
+        isGrounded = false;
+        this.state = State.Dive;
     }
 }

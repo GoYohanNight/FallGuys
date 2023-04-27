@@ -6,7 +6,6 @@ using System;
 public class DestroyTile : MonoBehaviour
 {
     public int PlayerFloor = 0;
-    private bool isStart = false;
     public bool isGameOver = false;
 
     
@@ -126,10 +125,10 @@ public class DestroyTile : MonoBehaviour
                     }
                 }
                 max -= NumForErase;
-                Debug.Log(max);
+                // Debug.Log(max);
             }
             yield return new WaitForSeconds(3f);
-            Debug.Log("End of Coroutine");
+            // Debug.Log("End of Coroutine");
 
         }
     }
